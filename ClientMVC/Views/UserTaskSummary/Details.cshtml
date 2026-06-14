@@ -1,0 +1,88 @@
+﻿@model ClientMVC.Models.UserTaskSummaryVm
+@using ClientMVC.Common.Enums
+@using Microsoft.AspNetCore.Identity
+
+@{
+    ViewData["Title"] = "Task Summary Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">@Model.Title</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>User:</strong> @Model.UserName</p>
+            <p><strong>Description:</strong></p>
+            <p>@Model.Description</p>
+            <p class="text-muted">
+                <strong>Status: </strong><span class="badge @(
+                                               Model.Status == TaskStatusEnum.Pending ? "bg-danger text-dark" :
+                                               Model.Status == TaskStatusEnum.InProgress ? "bg-primary" :
+                                               Model.Status == TaskStatusEnum.Completed ? "bg-success" :
+                                               "bg-secondary"
+                                                                                                                )">@Model.Status</span>
+            </p>            <p class="text-muted small">Created on: @Model.CreatedAt.ToString("f")</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h4 class="mb-0">Comments (@Model.Comments?.Count)</h4>
+        </div>
+        <div class="card-body" id="commentsSection">
+            @if (Model.Comments == null || !Model.Comments.Any())
+            {
+                <p class="text-muted">No comments yet. Be the first to comment!</p>
+            }
+            else
+            {
+                foreach (var comment in Model.Comments.OrderBy(c => c.UpdatedAt > c.CreatedAt ? c.UpdatedAt : c.CreatedAt))
+                {
+                    <div class="border rounded p-2 mb-2">
+                        <h6>@comment.UserName</h6>
+                        <p>@comment.Content</p>
+                        <small class="text-muted">
+                            @(
+                                 comment.UpdatedAt > comment.CreatedAt
+                                 ? $"Edited on: {comment.UpdatedAt:MMM dd, yyyy 'at' hh:mm tt}"
+                                 : $"Posted on: {comment.CreatedAt:MMM dd, yyyy 'at' hh:mm tt}"
+                             )
+                         </small>
+                        @if (User.Identity != null && comment.UserName == User.Identity.Name)
+                        {
+                            <button class="btn btn-sm btn-outline-primary edit-comment-btn"
+                                    data-id="@comment.Id"
+                                    data-content="@comment.Content"
+                                    data-summaryid="@Model.Id">
+                                Edit
+                            </button>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="mt-4">
+        <form id="commentForm" asp-action="AddComment" asp-controller="UserTaskSummary" method="post">
+            <input type="hidden" name="summaryId" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Add a comment</label>
+                <textarea class="form-control" name="content" rows="2" required maxlength="200"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+            <a asp-action="Index" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/pagescript/usertasksummary/details.js"></script>
+    <script>
+        $(document).ready(function(){
+            var viewDetails = new ViewDetails();
+            viewDetails.init();
+        });
+    </script>
+}

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5">
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">User Task Summary</h5>
+                    <p class="card-text">Manage Daily Tasks</p>
+                    <a class="btn btn-outline-dark w-100" asp-controller="UserTaskSummary" asp-action="Index">Task Summary</a>
+                </div>
+            </div>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+        {
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text">Manage users</p>
+                        <a class="btn btn-outline-dark w-100" asp-controller="Users" asp-action="Index">View Users</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

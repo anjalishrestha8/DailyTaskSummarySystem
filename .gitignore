@@ -1,0 +1,36 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Publish output
+publish/
+
+# Logs
+logs/
+*.log
+
+# NuGet
+packages/
+
+# Environment configs
+appsettings.Development.json
+
+# Secrets
+secrets.json
+
+# OS files
+Thumbs.db
+Desktop.ini

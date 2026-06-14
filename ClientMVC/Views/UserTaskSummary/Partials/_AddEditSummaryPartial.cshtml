@@ -1,0 +1,42 @@
+﻿@using ClientMVC.Common.Enums
+@model ClientMVC.Models.UserTaskSummaryVm
+
+<div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true" data-bs-backdrop='static'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="summaryModalLabel">@((Model.Id == Guid.Empty) ? "Add Summary" : "Edit Summary")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="summaryForm">
+                    <input type="hidden" id="summaryId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" asp-for="Title" id ="Title" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" asp-for="Description" rows="5" required>@Model.Description</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="Status" required>
+                            <option value="Pending" selected="@(Model.Status == TaskStatusEnum.Pending)">Pending</option>
+                            <option value="InProgress" selected="@(Model.Status == TaskStatusEnum.InProgress)">In Progress</option>
+                            <option value="Completed" selected="@(Model.Status == TaskStatusEnum.Completed)">Completed</option>
+                        </select>
+                    </div>
+                </form>
+                <div id="summaryFormAlert" class="alert d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnSaveSummary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+@section Scripts {
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Access Denied',
+            text: 'You do not have permission to access this page.',
+            confirmButtonText: 'Go Back'
+        }).then(() => {
+                history.back();
+            }
+        );
+    </script>
+}

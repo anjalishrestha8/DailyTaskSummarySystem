@@ -1,0 +1,127 @@
+﻿@model ClientMVC.Models.PaginatedUserTaskSummaryVm
+@using System.Security.Claims
+@using ClientMVC.Common.Enums
+
+
+
+@if (Model == null || Model.Items == null || !Model.Items.Any())
+{
+    bool hasSearch = !string.IsNullOrEmpty(@Context.Request.Query["searchTerm"])
+                    || !string.IsNullOrEmpty(@Context.Request.Query["fromDate"])
+                    || !string.IsNullOrEmpty(@Context.Request.Query["toDate"]);
+
+    if (hasSearch)
+    {
+        <div class="text-center mt-5">
+            <i class="bi bi-journal-x text-secondary" style="font-size: 3rem;"></i>
+            <h4 class="mt-3 text-muted">No results found</h4>
+            <br />
+            <a href="@Url.Action("Index", "UserTaskSummary")" class="btn btn-outline-primary">Clear Filters</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center mt-5">
+            <i class="bi bi-journal-x text-secondary" style="font-size: 3rem;"></i>
+            <h4 class="mt-3 text-muted">No summaries found</h4>
+
+            @if (User.IsInRole("User"))
+            {
+                <p class="text-muted">You haven’t created any task summaries yet.</p>
+                <button class="btn btn-primary mb-2" id="btnAddSummary">Add Your First Summary</button>
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="container mb-3">
+
+        <form method="get" class="row mb-3" id="filterForm">
+            <div class="col-md-2">
+                <label label-for="searchTerm" name="searchTerm" class="form-label">Search</label>
+                <input type="text" name="searchTerm" id="searchTerm" class="form-control" placeholder="Enter keyword" value="@Model.SearchTerm" />
+
+            </div>
+            <div class="col-md-2">
+                <label label-for="select" name="select" class="form-label">Sort By</label>
+                <select name="sortBy" id="sortBy" class="form-select">
+                    <option value="" disabled selected>Sort By</option>
+                    <option value="Title" selected="@("Title" == @Model.SortBy)">Title</option>
+                    @if(User.IsInRole("Admin"))
+                    {
+                        <option value="UserName" selected="@("UserName" == @Model.SortBy)">UserName</option>
+                    }
+                    <option value="Status" selected="@("Status" == @Model.SortBy)">Status</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label label-for="select" name="select" class="form-label">Sort Order</label>
+                <select name="sortOrder" id="sortOrder" class="form-select">
+                    <option value="" disabled selected>Sort Order</option>
+                    <option value="desc" selected="@("desc" == @Model.SortOrder)">Descending</option>
+                    <option value="asc" selected="@("asc" == @Model.SortOrder)">Ascending</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label label-for="fromDate" name="fromDate" class="form-label">From Date</label>
+                <input name="fromDate" class="form-control flatpickr" id="fromDate" value="@(Model.FromDate == null ? Model.FromDate : Model.FromDate.Value.ToString("yyy/MM/dd"))" />
+
+            </div>
+            <div class="col-md-2">
+                <label label-for="toDate" name="toDate" class="form-label">To Date</label>
+                <input name="toDate" class="form-control flatpickr" id="toDate" value="@(Model.ToDate == null ? Model.ToDate : Model.ToDate.Value.ToString("yyy/MM/dd"))" />
+            </div>
+            <div class="col-md-2">
+                <br />
+                <button type="submit" class="btn btn-primary w-100 mt-2" id="searchBtn">Search</button>
+            </div>
+            <div class="col-md-1">
+                <br />
+                <a href="@Url.Action("Index", "UserTaskSummary")" class="btn btn-sm">Clear Filters</a>
+            </div>
+            <div class="col-md-1">
+                <br />
+                <div id="validationMessage" style="color:red;" class="text-sm-center"></div>
+            </div>
+
+        </form>
+
+    </div>
+
+    bool hasTodaySummary = Model.Items != null && Model.Items.Any(s =>
+        s.CreatedAt.Date == DateTime.UtcNow.Date &&
+        s.UserId == User.FindFirstValue("UserId"));
+
+    <div class="text-center mt-2">
+        @if (User.IsInRole("User"))
+        {
+            @if (hasTodaySummary)
+            {
+                @* <button class="btn btn-secondary mb-3" disabled>Add New Summary</button> *@
+            }
+            else
+            {
+                <button class="btn btn-primary mb-3" id="btnAddSummary">Add New Summary</button>
+            }
+        }
+    </div>
+    <div id="userTaskSummaryContainer" class="mt-5">
+        <form method="post" id="filterFormPost">
+            <div id="userTaskSummaryPartial">
+                @await Html.PartialAsync("_UserTaskSummaryPartial", Model)
+            </div>
+        </form>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/pagescript/usertasksummary/index.js"></script>
+    <script>
+        $(document).ready(function(){
+            var userTaskSummary = new UserTaskSummaryIndex();
+            userTaskSummary.init();
+        });
+    </script>
+}
+

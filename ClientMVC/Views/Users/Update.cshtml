@@ -1,0 +1,36 @@
+﻿@model ClientMVC.Models.UserViewModel
+@{
+    ViewData["Title"] = "Update User";
+}
+<div class="container py-2">
+    <div class="card p-2 align-content-center">
+        <div class="card-header">
+            <h2>Update Role</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Update" method="post" id="updateUserForm" >
+                <input type="hidden" asp-for="UserId" />
+                <div class="form-group ">
+                    <label asp-for="RoleName"></label>
+                    <select asp-for="RoleName" class="form-control select2" asp-items="@(new SelectList(Model.Roles, Model.RoleName))">
+                        <option value="">-- Select Role --</option>
+                    </select>
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Update</button>
+                <a asp-action="Index" class="btn btn-secondary mt-2">Back to List</a>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/pagescript/user/update.js"></script>
+    <script>
+        $(document).ready(function() {
+            var updateUser = new UpdateUser();
+                updateUser.init();
+        });
+    </script>
+}
